@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Bell, MessageSquare, User, Settings } from 'lucide-react';
+import { Home, User, Settings } from 'lucide-react';
 import { NavItem } from './NavItem';
 import { cn } from '@/lib/utils';
 
@@ -9,8 +9,6 @@ interface NavigationProps {
 
 const navItems = [
   { icon: Home, label: 'Home' },
-  { icon: Bell, label: 'Notifications' },
-  { icon: MessageSquare, label: 'Messages' },
   { icon: User, label: 'Profile' },
   { icon: Settings, label: 'Settings' },
 ];
