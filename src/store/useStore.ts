@@ -34,56 +34,76 @@ export const useStore = create<Store>((set, get) => ({
 
   signup: async (userId, password) => {
     try {
-      await api.signup(userId, password);
-      await get().signin(userId, password);
+      const response = await api.signup(userId, password);
+      set({
+        currentUser: response.user,
+        isAuthenticated: true,
+        error: null,
+      });
     } catch (error) {
       set({ error: error instanceof Error ? error.message : 'Failed to signup' });
+      throw error;
     }
   },
 
   signin: async (userId, password) => {
     try {
-      await api.signin(userId, password);
-      set({ isAuthenticated: true, error: null });
+      const response = await api.signin(userId, password);
+      set({
+        currentUser: response.user,
+        isAuthenticated: true,
+        error: null,
+      });
     } catch (error) {
       set({ error: error instanceof Error ? error.message : 'Failed to signin' });
+      throw error;
     }
   },
 
   signout: async () => {
     try {
       await api.signout();
-      set({ isAuthenticated: false, currentUser: null, posts: [], error: null });
+      set({
+        isAuthenticated: false,
+        currentUser: null,
+        posts: [],
+        error: null,
+      });
     } catch (error) {
       set({ error: error instanceof Error ? error.message : 'Failed to signout' });
+      throw error;
     }
   },
 
   addPost: async (content) => {
     try {
       await api.createPost(content);
-      // Optionally refresh posts here
+      const timeline = await api.getTimeline(1);
+      set({ posts: timeline, error: null });
     } catch (error) {
       set({ error: error instanceof Error ? error.message : 'Failed to create post' });
+      throw error;
     }
   },
 
   deletePost: async (postId) => {
     try {
       await api.deletePost(postId);
-      set((state) => ({
-        posts: state.posts.filter((post) => post.id !== postId),
+      set(state => ({
+        posts: state.posts.filter(post => post.id !== postId),
+        error: null,
       }));
     } catch (error) {
       set({ error: error instanceof Error ? error.message : 'Failed to delete post' });
+      throw error;
     }
   },
 
   toggleLike: async (postId) => {
     try {
       await api.toggleLike(postId);
-      set((state) => ({
-        posts: state.posts.map((post) =>
+      set(state => ({
+        posts: state.posts.map(post =>
           post.id === postId
             ? {
                 ...post,
@@ -92,17 +112,19 @@ export const useStore = create<Store>((set, get) => ({
               }
             : post
         ),
+        error: null,
       }));
     } catch (error) {
       set({ error: error instanceof Error ? error.message : 'Failed to toggle like' });
+      throw error;
     }
   },
 
   toggleRepost: async (postId) => {
     try {
       await api.repost(postId);
-      set((state) => ({
-        posts: state.posts.map((post) =>
+      set(state => ({
+        posts: state.posts.map(post =>
           post.id === postId
             ? {
                 ...post,
@@ -111,17 +133,19 @@ export const useStore = create<Store>((set, get) => ({
               }
             : post
         ),
+        error: null,
       }));
     } catch (error) {
       set({ error: error instanceof Error ? error.message : 'Failed to repost' });
+      throw error;
     }
   },
 
   editPost: async (postId, content) => {
     try {
       await api.editPost(postId, content);
-      set((state) => ({
-        posts: state.posts.map((post) =>
+      set(state => ({
+        posts: state.posts.map(post =>
           post.id === postId
             ? {
                 ...post,
@@ -130,9 +154,11 @@ export const useStore = create<Store>((set, get) => ({
               }
             : post
         ),
+        error: null,
       }));
     } catch (error) {
       set({ error: error instanceof Error ? error.message : 'Failed to edit post' });
+      throw error;
     }
   },
 
@@ -142,15 +168,18 @@ export const useStore = create<Store>((set, get) => ({
       set({ posts, error: null });
     } catch (error) {
       set({ error: error instanceof Error ? error.message : 'Failed to search posts' });
+      throw error;
     }
   },
 
   reply: async (postId, content) => {
     try {
       await api.reply(postId, content);
-      // Optionally refresh posts or add reply to state
+      const timeline = await api.getTimeline(1);
+      set({ posts: timeline, error: null });
     } catch (error) {
       set({ error: error instanceof Error ? error.message : 'Failed to reply' });
+      throw error;
     }
   },
 

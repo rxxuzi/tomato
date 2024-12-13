@@ -1,3 +1,5 @@
+import { User } from './user';
+
 export interface Post {
   id: string;
   content: string;
@@ -8,12 +10,4 @@ export interface Post {
   reposts: number;
   isLiked: boolean;
   isReposted: boolean;
-}
-
-export interface User {
-  id: string;
-  name: string;
-  handle: string;
-  avatar: string;
-  bio: string;
 }
